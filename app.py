@@ -6,148 +6,98 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("🏙️ Hyderabad Property Details")
+st.title("Hyderabad Property Details")
 st.caption("Enter buyer-focused property information")
 
-# Form starts
-with st.form("property_form"):
-    st.subheader("📍 Basic Property Information")
+st.subheader("Basic Property Information")
 
-    locality = st.text_input("Locality")
+locality = st.text_input("Locality")
 
-    property_type = st.selectbox(
-        "Property Type",
-        ["Apartment", "Independent House", "Villa"]
-    )
+property_type = st.selectbox(
+    "Property Type",
+    ["Apartment", "Independent House", "Villa"]
+)
 
-    built_up_area = st.number_input(
-        "Built-up Area (sqft)",
-        min_value=100,
-        step=10
-    )
+built_up_area = st.number_input(
+    "Built-up Area (sqft)",
+    min_value=100,
+    step=10
+)
 
-    price_per_sqft = st.number_input(
-        "Price per Sqft (INR)",
-        min_value=1000,
-        step=100
-    )
+price_per_sqft = st.number_input(
+    "Price per Sqft (INR)",
+    min_value=1000,
+    step=100
+)
 
-    bedrooms = st.selectbox(
-        "Bedrooms (BHK)",
-        [1, 2, 3, 4]
-    )
+bedrooms = st.selectbox("Bedrooms (BHK)", [1, 2, 3, 4])
+bathrooms = st.selectbox("Bathrooms", [1, 2, 3, 4])
+balconies = st.selectbox("Balconies", [0, 1, 2, 3])
 
-    bathrooms = st.selectbox(
-        "Bathrooms",
-        [1, 2, 3, 4]
-    )
+floor_number = st.number_input("Floor Number", min_value=0, step=1)
+total_floors = st.number_input("Total Floors", min_value=0, step=1)
 
-    balconies = st.selectbox(
-        "Balconies",
-        [0, 1, 2, 3]
-    )
+property_age = st.number_input(
+    "Property Age (Years)",
+    min_value=0,
+    step=1
+)
 
-    floor_number = st.number_input(
-        "Floor Number",
-        min_value=0,
-        step=1
-    )
+facing = st.selectbox(
+    "Facing",
+    ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"]
+)
 
-    total_floors = st.number_input(
-        "Total Floors",
-        min_value=0,
-        step=1
-    )
+furnishing_status = st.selectbox(
+    "Furnishing Status",
+    ["Unfurnished", "Semi-Furnished", "Fully Furnished"]
+)
 
-    property_age = st.number_input(
-        "Property Age (Years)",
-        min_value=0,
-        step=1
-    )
+car_parking = st.selectbox("Car Parking", [0, 1, 2])
 
-    facing = st.selectbox(
-        "Facing",
-        ["North", "South", "East", "West",
-         "North-East", "North-West", "South-East", "South-West"]
-    )
+st.subheader("Distance & Amenities")
 
-    furnishing_status = st.selectbox(
-        "Furnishing Status",
-        ["Unfurnished", "Semi-Furnished", "Fully Furnished"]
-    )
+distance_metro = st.number_input("Distance to Metro (km)", min_value=0.0)
+distance_it_hub = st.number_input("Distance to IT Hub (km)", min_value=0.0)
 
-    car_parking = st.selectbox(
-        "Car Parking",
-        [0, 1, 2]
-    )
+nearby_schools = st.number_input("Nearby Schools (count)", min_value=0, step=1)
+nearby_hospitals = st.number_input("Nearby Hospitals (count)", min_value=0, step=1)
+amenities_count = st.number_input("Amenities Count", min_value=0, step=1)
 
-    st.subheader("📏 Distance & Amenities")
+st.subheader("Financial Details")
 
-    distance_metro = st.number_input(
-        "Distance to Metro (km)",
-        min_value=0.0,
-        step=0.1
-    )
+maintenance = st.number_input(
+    "Monthly Maintenance (INR)",
+    min_value=0,
+    step=100
+)
 
-    distance_it_hub = st.number_input(
-        "Distance to IT Hub (km)",
-        min_value=0.0,
-        step=0.1
-    )
+rental_yield = st.number_input(
+    "Rental Yield (%)",
+    min_value=0.0,
+    step=0.1
+)
 
-    nearby_schools = st.number_input(
-        "Nearby Schools (count)",
-        min_value=0,
-        step=1
-    )
+estimated_price = st.number_input(
+    "Estimated Sale Price (INR)",
+    min_value=0,
+    step=10000
+)
 
-    nearby_hospitals = st.number_input(
-        "Nearby Hospitals (count)",
-        min_value=0,
-        step=1
-    )
+buyer_score = st.slider(
+    "Buyer Attraction Score (1–10)",
+    1.0, 10.0, 5.0, 0.1
+)
 
-    amenities_count = st.number_input(
-        "Amenities Count",
-        min_value=0,
-        step=1
-    )
+# Submit button
+submitted = st.button("Submit Property Details")
 
-    st.subheader("💰 Financial Details")
-
-    maintenance = st.number_input(
-        "Monthly Maintenance (INR)",
-        min_value=0,
-        step=100
-    )
-
-    rental_yield = st.number_input(
-        "Rental Yield (%)",
-        min_value=0.0,
-        step=0.1
-    )
-
-    estimated_price = st.number_input(
-        "Estimated Sale Price (INR)",
-        min_value=0,
-        step=10000
-    )
-
-    buyer_score = st.slider(
-        "Buyer Attraction Score (1–10)",
-        min_value=1.0,
-        max_value=10.0,
-        step=0.1
-    )
-
-    submitted = st.form_submit_button("✅ Submit Property Details")
-
-# Display summary after submission
+# Output
 if submitted:
-    st.success("Property details submitted successfully!")
+    st.success("Property details submitted successfully")
 
-    st.markdown("### 📋 Property Summary")
-    st.write({
+    st.subheader("Property Summary")
+    st.json({
         "Locality": locality,
         "Property Type": property_type,
         "Built-up Area (sqft)": built_up_area,
