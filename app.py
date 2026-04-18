@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# Page title
-st.title("Hyderabad Real Estate – Data Preview")
+# Page titlest.title("Hyderabad Real Estate – Data")
 
 # Load data
 @st.cache_data
