@@ -1,118 +1,173 @@
 import streamlit as st
-import pandas as pd
 
-st.title("Hyderabad Real Estate – Data Preview")
-
-# -------------------------------------------------
-# Embedded dataset with multiple localities
-# -------------------------------------------------
-data = [
-    {
-        "Property ID": 50001,
-        "Locality": "Banjara Hills",
-        "Property Type": "Apartment",
-        "Built-up Area (sqft)": 1283,
-        "Price per Sqft (INR)": 7461,
-        "Bedrooms (BHK)": 3,
-        "Estimated Sale Price (INR)": 9572463
-    },
-    {
-        "Property ID": 50002,
-        "Locality": "Kondapur",
-        "Property Type": "Independent House",
-        "Built-up Area (sqft)": 1263,
-        "Price per Sqft (INR)": 9473,
-        "Bedrooms (BHK)": 3,
-        "Estimated Sale Price (INR)": 11964399
-    },
-    {
-        "Property ID": 50003,
-        "Locality": "Nizampet",
-        "Property Type": "Apartment",
-        "Built-up Area (sqft)": 2598,
-        "Price per Sqft (INR)": 8933,
-        "Bedrooms (BHK)": 3,
-        "Estimated Sale Price (INR)": 23207934
-    },
-    {
-        "Property ID": 50004,
-        "Locality": "Jubilee Hills",
-        "Property Type": "Apartment",
-        "Built-up Area (sqft)": 2231,
-        "Price per Sqft (INR)": 8277,
-        "Bedrooms (BHK)": 4,
-        "Estimated Sale Price (INR)": 18465987
-    },
-    {
-        "Property ID": 50005,
-        "Locality": "HITEC City",
-        "Property Type": "Apartment",
-        "Built-up Area (sqft)": 2120,
-        "Price per Sqft (INR)": 5456,
-        "Bedrooms (BHK)": 3,
-        "Estimated Sale Price (INR)": 11566720
-    },
-    {
-        "Property ID": 50006,
-        "Locality": "Madhapur",
-        "Property Type": "Villa",
-        "Built-up Area (sqft)": 2359,
-        "Price per Sqft (INR)": 7604,
-        "Bedrooms (BHK)": 2,
-        "Estimated Sale Price (INR)": 17937836
-    },
-    {
-        "Property ID": 50007,
-        "Locality": "Gachibowli",
-        "Property Type": "Villa",
-        "Built-up Area (sqft)": 2295,
-        "Price per Sqft (INR)": 6193,
-        "Bedrooms (BHK)": 3,
-        "Estimated Sale Price (INR)": 14212935
-    },
-    {
-        "Property ID": 50008,
-        "Locality": "Kukatpally",
-        "Property Type": "Independent House",
-        "Built-up Area (sqft)": 2095,
-        "Price per Sqft (INR)": 7369,
-        "Bedrooms (BHK)": 2,
-        "Estimated Sale Price (INR)": 15438055
-    },
-    {
-        "Property ID": 50009,
-        "Locality": "LB Nagar",
-        "Property Type": "Apartment",
-        "Built-up Area (sqft)": 2307,
-        "Price per Sqft (INR)": 7946,
-        "Bedrooms (BHK)": 3,
-        "Estimated Sale Price (INR)": 18331422
-    },
-    {
-        "Property ID": 50010,
-        "Locality": "Uppal",
-        "Property Type": "Independent House",
-        "Built-up Area (sqft)": 2453,
-        "Price per Sqft (INR)": 8291,
-        "Bedrooms (BHK)": 4,
-        "Estimated Sale Price (INR)": 20337823
-    }
-]
-
-df = pd.DataFrame(data)
-
-# -------------------------------------------------
-# Locality filter
-# -------------------------------------------------
-localities = sorted(df["Locality"].unique())
-
-selected_locality = st.selectbox(
-    "Select Locality",
-    ["All"] + localities
+# Page configuration
+st.set_page_config(
+    page_title="Hyderabad Property Details",
+    layout="centered"
 )
 
-if selected_locality != "All":
-    df = df[df["Locality"] == selected_locality]
+st.title("🏙️ Hyderabad Property Details")
+st.caption("Enter buyer-focused property information")
 
-st.write(f"Showing **{len(df)}** records")
-st.dataframe(df, use_container_width=True)
+# Form starts
+with st.form("property_form"):
+    st.subheader("📍 Basic Property Information")
+
+    locality = st.text_input("Locality")
+
+    property_type = st.selectbox(
+        "Property Type",
+        ["Apartment", "Independent House", "Villa"]
+    )
+
+    built_up_area = st.number_input(
+        "Built-up Area (sqft)",
+        min_value=100,
+        step=10
+    )
+
+    price_per_sqft = st.number_input(
+        "Price per Sqft (INR)",
+        min_value=1000,
+        step=100
+    )
+
+    bedrooms = st.selectbox(
+        "Bedrooms (BHK)",
+        [1, 2, 3, 4]
+    )
+
+    bathrooms = st.selectbox(
+        "Bathrooms",
+        [1, 2, 3, 4]
+    )
+
+    balconies = st.selectbox(
+        "Balconies",
+        [0, 1, 2, 3]
+    )
+
+    floor_number = st.number_input(
+        "Floor Number",
+        min_value=0,
+        step=1
+    )
+
+    total_floors = st.number_input(
+        "Total Floors",
+        min_value=0,
+        step=1
+    )
+
+    property_age = st.number_input(
+        "Property Age (Years)",
+        min_value=0,
+        step=1
+    )
+
+    facing = st.selectbox(
+        "Facing",
+        ["North", "South", "East", "West",
+         "North-East", "North-West", "South-East", "South-West"]
+    )
+
+    furnishing_status = st.selectbox(
+        "Furnishing Status",
+        ["Unfurnished", "Semi-Furnished", "Fully Furnished"]
+    )
+
+    car_parking = st.selectbox(
+        "Car Parking",
+        [0, 1, 2]
+    )
+
+    st.subheader("📏 Distance & Amenities")
+
+    distance_metro = st.number_input(
+        "Distance to Metro (km)",
+        min_value=0.0,
+        step=0.1
+    )
+
+    distance_it_hub = st.number_input(
+        "Distance to IT Hub (km)",
+        min_value=0.0,
+        step=0.1
+    )
+
+    nearby_schools = st.number_input(
+        "Nearby Schools (count)",
+        min_value=0,
+        step=1
+    )
+
+    nearby_hospitals = st.number_input(
+        "Nearby Hospitals (count)",
+        min_value=0,
+        step=1
+    )
+
+    amenities_count = st.number_input(
+        "Amenities Count",
+        min_value=0,
+        step=1
+    )
+
+    st.subheader("💰 Financial Details")
+
+    maintenance = st.number_input(
+        "Monthly Maintenance (INR)",
+        min_value=0,
+        step=100
+    )
+
+    rental_yield = st.number_input(
+        "Rental Yield (%)",
+        min_value=0.0,
+        step=0.1
+    )
+
+    estimated_price = st.number_input(
+        "Estimated Sale Price (INR)",
+        min_value=0,
+        step=10000
+    )
+
+    buyer_score = st.slider(
+        "Buyer Attraction Score (1–10)",
+        min_value=1.0,
+        max_value=10.0,
+        step=0.1
+    )
+
+    submitted = st.form_submit_button("✅ Submit Property Details")
+
+# Display summary after submission
+if submitted:
+    st.success("Property details submitted successfully!")
+
+    st.markdown("### 📋 Property Summary")
+    st.write({
+        "Locality": locality,
+        "Property Type": property_type,
+        "Built-up Area (sqft)": built_up_area,
+        "Price per Sqft (INR)": price_per_sqft,
+        "Bedrooms (BHK)": bedrooms,
+        "Bathrooms": bathrooms,
+        "Balconies": balconies,
+        "Floor Number": floor_number,
+        "Total Floors": total_floors,
+        "Property Age (Years)": property_age,
+        "Facing": facing,
+        "Furnishing Status": furnishing_status,
+        "Car Parking": car_parking,
+        "Distance to Metro (km)": distance_metro,
+        "Distance to IT Hub (km)": distance_it_hub,
+        "Nearby Schools": nearby_schools,
+        "Nearby Hospitals": nearby_hospitals,
+        "Amenities Count": amenities_count,
+        "Monthly Maintenance (INR)": maintenance,
+        "Rental Yield (%)": rental_yield,
+        "Estimated Sale Price (INR)": estimated_price,
+        "Buyer Attraction Score": buyer_score
+    })
