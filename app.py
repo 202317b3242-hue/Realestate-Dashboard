@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
 
-st.title("Hyderabad Real Estate – Data")
+st.title("Hyderabad Real Estate – Data Preview")
 
-# -------------------------------------------------
-# Embedded data (sample        "Property ID": 50001,# Embedded data (sample from your dataset)
+# Embedded data
+data = [
+    {
+        "Property ID": 50001,
         "Locality": "Banjara Hills",
         "Property Type": "Apartment",
         "Built-up Area (sqft)": 1283,
@@ -32,42 +34,21 @@ st.title("Hyderabad Real Estate – Data")
         "Bedrooms (BHK)": 3,
         "Estimated Sale Price (INR)": 23207934,
         "Buyer Attraction Score": 10
-    },
-    {
-        "Property ID": 50004,
-        "Locality": "Jubilee Hills",
-        "Property Type": "Apartment",
-        "Built-up Area (sqft)": 2231,
-        "Price per Sqft (INR)": 8277,
-        "Bedrooms (BHK)": 4,
-        "Estimated Sale Price (INR)": 18465987,
-        "Buyer Attraction Score": 7.5
     }
 ]
 
 df = pd.DataFrame(data)
 
-# -------------------------------------------------
 # Locality filter
-# -------------------------------------------------
 localities = sorted(df["Locality"].unique())
 
 selected_locality = st.selectbox(
     "Select Locality",
-    options=["All"] + localities
+    ["All"] + localities
 )
 
 if selected_locality != "All":
-    df_filtered = df[df["Locality"] == selected_locality]
-else:
-    df_filtered = df
+    df = df[df["Locality"] == selected_locality]
 
-st.write(f"Showing **{len(df_filtered)}** records")
-
-# -------------------------------------------------
-# Data preview
-# -------------------------------------------------
-st.dataframe(df_filtered, use_container_width=True)
-# -------------------------------------------------
-data = [
-    {
+st.write(f"Showing **{len(df)}** records")
+st.dataframe(df, use_container_width=True)
