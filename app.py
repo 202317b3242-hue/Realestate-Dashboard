@@ -1,67 +1,151 @@
 import streamlit as st
+import pandas as pd
 
+
+# ---------------------------------------------------------
+# PAGE CONFIG
+# ---------------------------------------------------------
 st.set_page_config(
-    page_title="Hyderabad Property Details",
-    layout="centered"
+    page_title="Hyderabad Real Estate Dashboard",
+    layout="wide",
 )
 
-st.title("Hyderabad Property Details")
-st.caption("Buyer-focused property entry form")
+st.title("Hyderabad Real Estate Buyer Dashboard")
+st.markdown("Buyer-focused analysis using embedded property data")
 
-locality = st.text_input("Locality")
-property_type = st.selectbox(
+# ---------------------------------------------------------
+# EMBEDDED DATA (NO FILE UPLOAD REQUIRED)
+# ---------------------------------------------------------
+@st.cache_data
+def load_data():
+    data = [
+        [50001, "Banjara Hills", "Apartment", 1283, 7461, 3, 3, 9572463, 4.77, 10],
+        [50002, "Kondapur", "Independent House", 1263, 9473, 3, 1, 11964399, 5.58, 10],
+        [50003, "Nizampet", "Apartment", 2598, 8933, 3, 2, 23207934, 4.17, 10],
+        [50004, "Jubilee Hills", "Apartment", 2231, 8277, 4, 1, 18465987, 2.53, 7.5],
+        [50005, "Kukatpally", "Independent House", 2095, 7369, 2, 1, 15438055, 2.56, 10],
+        [50008, "HITEC City", "Apartment", 2120, 5456, 3, 3, 11566720, 2.90, 10],
+        [50014, "Kondapur", "Villa", 2760, 8487, 3, 2, 23424120, 3.40, 10],
+        [50020, "Madhapur", "Villa", 2359, 7604, 2, 2, 17937836, 4.70, 10],
+        [50027, "Gachibowli", "Villa", 2295, 6193, 3, 2, 14212935, 2.47, 10],
+        [50032, "Manikonda", "Apartment", 802, 4725, 1, 2, 3789450, 4.78, 10],
+        [50037, "LB Nagar", "Apartment", 2927, 5315, 3, 2, 15557005, 4.33, 10],
+        [50041, "Banjara Hills", "Villa", 2791, 7620, 4, 3, 21267420, 2.35, 6.6],
+        [50055, "Madhapur", "Villa", 2334, 7670, 3, 3, 17901780, 4.44, 10],
+        [50064, "Banjara Hills", "Independent House", 3120, 7827, 1, 2, 24420240, 4.46, 9.6],
+        [50070, "Madhapur", "Apartment", 2387, 9942, 1, 2, 23731554, 2.37, 10],
+        [50085, "Jubilee Hills", "Apartment", 1754, 8841, 1, 1, 15507114, 6.48, 10],
+        [50093, "Jubilee Hills", "Villa", 2043, 8631, 1, 3, 17633133, 4.08, 10],
+        [50100, "Gachibowli", "Villa", 2800, 5471, 4, 1, 15318800, 6.44, 10],
+    ]
+
+    columns = [
+        "Property ID",
+        "Locality",
+        "Property Type",
+        "Built-up Area (sqft)",
+        "Price per Sqft",
+        "Bedrooms (BHK)",
+        "Bathrooms",
+        "Estimated Sale Price",
+        "Rental Yield (%)",
+        "Buyer Attraction Score",
+    ]
+
+    return pd.DataFrame(data, columns=columns)
+
+
+df = load_data()
+
+# ---------------------------------------------------------
+# SIDEBAR FILTERS
+# ---------------------------------------------------------
+st.sidebar.header("🔎 Filters")
+
+locality = st.sidebar.multiselect(
+    "Select Locality",
+    sorted(df["Locality"].unique()),
+    default=df["Locality"].unique(),
+)
+
+property_type = st.sidebar.multiselect(
     "Property Type",
-    ["Apartment", "Independent House", "Villa"]
+    df["Property Type"].unique(),
+    default=df["Property Type"].unique(),
 )
 
-built_up_area = st.number_input(
-    "Built-up Area (sqft)", min_value=100, step=10
+bhk = st.sidebar.multiselect(
+    "Bedrooms (BHK)",
+    sorted(df["Bedrooms (BHK)"].unique()),
+    default=df["Bedrooms (BHK)"].unique(),
 )
 
-price_per_sqft = st.number_input(
-    "Price per Sqft (INR)", min_value=1000, step=100
+budget = st.sidebar.slider(
+    "Budget (INR)",
+    int(df["Estimated Sale Price"].min()),
+    int(df["Estimated Sale Price"].max()),
+    (
+        int(df["Estimated Sale Price"].min()),
+        int(df["Estimated Sale Price"].max()),
+    ),
 )
 
-bedrooms = st.selectbox("Bedrooms (BHK)", [1, 2, 3, 4])
-bathrooms = st.selectbox("Bathrooms", [1, 2, 3, 4])
-balconies = st.selectbox("Balconies", [0, 1, 2, 3])
+# ---------------------------------------------------------
+# FILTER DATA
+# ---------------------------------------------------------
+filtered_df = df[
+    (df["Locality"].isin(locality)) &
+    (df["Property Type"].isin(property_type)) &
+    (df["Bedrooms (BHK)"].isin(bhk)) &
+    (df["Estimated Sale Price"].between(budget[0], budget[1]))
+]
 
-property_age = st.number_input("Property Age (Years)", min_value=0)
-facing = st.selectbox(
-    "Facing",
-    ["North", "South", "East", "West",
-     "North-East", "North-West", "South-East", "South-West"]
+# ---------------------------------------------------------
+# KPI METRICS
+# ---------------------------------------------------------
+st.subheader("📊 Key Metrics")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Total Properties", len(filtered_df))
+col2.metric("Avg Price / Sqft", f"₹ {int(filtered_df['Price per Sqft'].mean())}")
+col3.metric("Avg Sale Price", f"₹ {int(filtered_df['Estimated Sale Price'].mean()):,}")
+col4.metric("Avg Rental Yield", f"{filtered_df['Rental Yield (%)'].mean():.2f} %")
+
+# ---------------------------------------------------------
+# CHARTS
+# ---------------------------------------------------------
+st.subheader("📈 Visual Analysis")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    fig1 = px.bar(
+        filtered_df,
+        x="Locality",
+        y="Estimated Sale Price",
+        color="Property Type",
+        title="Average Sale Price by Locality",
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col2:
+    fig2 = px.scatter(
+        filtered_df,
+        x="Built-up Area (sqft)",
+        y="Estimated Sale Price",
+        color="Bedrooms (BHK)",
+        size="Buyer Attraction Score",
+        title="Area vs Price Relationship",
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+# ---------------------------------------------------------
+# DATA TABLE
+# ---------------------------------------------------------
+st.subheader("📋 Property Details")
+
+st.dataframe(
+    filtered_df.sort_values("Buyer Attraction Score", ascending=False),
+    use_container_width=True,
 )
-
-furnishing_status = st.selectbox(
-    "Furnishing Status",
-    ["Unfurnished", "Semi-Furnished", "Fully Furnished"]
-)
-
-car_parking = st.selectbox("Car Parking", [0, 1, 2])
-
-estimated_price = st.number_input(
-    "Estimated Sale Price (INR)", min_value=0, step=10000
-)
-
-buyer_score = st.slider(
-    "Buyer Attraction Score (1–10)", 1.0, 10.0, 5.0, 0.1
-)
-
-if st.button("Submit"):
-    st.success("Property details captured successfully")
-    st.json({
-        "Locality": locality,
-        "Property Type": property_type,
-        "Built-up Area (sqft)": built_up_area,
-        "Price per Sqft (INR)": price_per_sqft,
-        "Bedrooms (BHK)": bedrooms,
-        "Bathrooms": bathrooms,
-        "Balconies": balconies,
-        "Property Age (Years)": property_age,
-        "Facing": facing,
-        "Furnishing Status": furnishing_status,
-        "Car Parking": car_parking,
-        "Estimated Sale Price (INR)": estimated_price,
-        "Buyer Attraction Score": buyer_score
-    })
